@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#082f45">
+  <meta name="description" content="Код приставки — короткая игра по заданию 10 ЕГЭ по русскому языку.">
+  <title>Код приставки — ледовая экспедиция</title>
+  <style>
+    :root{--navy:#082f45;--deep:#052335;--sea:#0b6378;--aqua:#7de0dd;--ice:#e9faff;--white:#fff;--gold:#ffd575;--coral:#ff806e;--ink:#173748;--muted:#527080;--line:#b8dbe3;--good:#1a765d;--bad:#a94646}
+    *{box-sizing:border-box}
+    [hidden]{display:none!important}
+    html{min-height:100%;background:var(--deep)}
+    body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#062e46 0,#0d6d83 48%,#b3e7ec 100%);line-height:1.45}
+    button{font:inherit;cursor:pointer}
+    button:focus-visible{outline:3px solid #ffba49;outline-offset:3px}
+    .shell{width:min(1100px,calc(100% - 32px));margin:auto;padding:24px 0 40px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;color:white;margin-bottom:22px}
+    .brand{font-weight:900;letter-spacing:.08em;text-transform:uppercase;font-size:.85rem}
+    .brand span{color:var(--aqua)}
+    .time-pill{border:1px solid #ffffff66;background:#ffffff1a;border-radius:99px;padding:8px 13px;font-size:.83rem;font-weight:700;white-space:nowrap}
+    .hero{position:relative;overflow:hidden;border:1px solid #ffffff55;border-radius:28px;background:linear-gradient(118deg,#073e59,#0a6b81 75%);color:white;box-shadow:0 25px 60px #05283c55}
+    .hero-inner{position:relative;z-index:2;padding:clamp(28px,5vw,54px);max-width:710px}
+    .eyebrow{color:var(--gold);font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.13em;margin:0 0 12px}
+    h1{font-size:clamp(2.4rem,6vw,5rem);letter-spacing:-.055em;line-height:.98;margin:0 0 20px;max-width:650px}
+    .lead{font-size:clamp(1rem,2vw,1.18rem);color:#e2f7fb;max-width:570px;margin:0 0 22px}
+    .hero-art{position:absolute;width:390px;right:-42px;bottom:-26px;opacity:.95;pointer-events:none}
+    .floes{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 120px 28px at 86% 18%,#cffaff44 0 65%,transparent 68%),radial-gradient(ellipse 85px 22px at 68% 75%,#cffaff55 0 65%,transparent 68%)}
+    .start-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-top:18px}
+    .panel{background:#f8fdff;border:1px solid #bce5ec;border-radius:22px;padding:25px;box-shadow:0 12px 28px #06456222}
+    .panel h2{font-size:1.1rem;margin:0 0 12px}
+    .panel p{margin:0;color:var(--muted)}
+    .rules{margin:0;padding-left:22px}
+    .rules li{margin:7px 0}
+    .cta{border:0;border-radius:14px;background:var(--gold);color:#26303b;font-weight:900;padding:14px 24px;min-height:50px;box-shadow:0 6px 0 #c99738;transition:transform .15s,box-shadow .15s}
+    .cta:hover{transform:translateY(-2px)}
+    .cta:active{transform:translateY(4px);box-shadow:0 2px 0 #c99738}
+    .cta:disabled{cursor:not-allowed;opacity:.5;transform:none}
+    .secondary{border:1px solid #a4d1db;border-radius:12px;background:white;color:var(--navy);font-weight:800;padding:11px 16px}
+    .source{font-size:.78rem;color:#d0eef4;margin:15px 4px 0}
+    .game{display:none}
+    .game.active{display:block}
+    .welcome.hidden{display:none}
+    .game-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;color:white;margin-bottom:14px}
+    .game-head h1{font-size:clamp(1.8rem,4vw,3rem);margin:0 0 5px}
+    .game-head p{margin:0;color:#d7f5f8}
+    .counter{background:#e0f7f8;color:var(--navy);border-radius:99px;padding:10px 15px;font-weight:900;white-space:nowrap}
+    .route{background:#ffffff26;border:1px solid #ffffff55;border-radius:18px;padding:15px 19px;margin-bottom:16px;color:white}
+    .route-labels{display:flex;justify-content:space-between;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
+    .track{position:relative;height:15px;background:#d6f3f677;border-radius:99px;margin:16px 20px 11px}
+    .track-fill{height:100%;width:0;background:linear-gradient(90deg,#73e0d8,#ffe39d);border-radius:99px;transition:width .45s}
+    .ship-marker{position:absolute;top:-27px;left:0;font-size:2rem;transform:translateX(-35%);transition:left .45s;filter:drop-shadow(0 2px 1px #073143)}
+    .route-status{font-size:.85rem;color:#e2f7f9}
+    .challenge{background:#f9fdff;border-radius:24px;box-shadow:0 25px 60px #032c4160;overflow:hidden}
+    .challenge-top{background:linear-gradient(90deg,#e2f8fb,#f9fdff);padding:23px 26px 18px;border-bottom:1px solid #c7e6ec}
+    .question-kicker{font-weight:900;font-size:.76rem;color:var(--sea);text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px}
+    .challenge h2{font-size:clamp(1.22rem,2.7vw,1.7rem);line-height:1.3;margin:0}
+    .hint{color:var(--muted);font-size:.9rem;margin:9px 0 0}
+    .options{padding:18px 24px 6px;display:grid;gap:10px}
+    .option{display:flex;gap:13px;align-items:flex-start;width:100%;min-height:57px;text-align:left;border:2px solid #c7e2e8;border-radius:14px;background:white;color:var(--ink);padding:12px 15px;transition:background .15s,border-color .15s,transform .15s}
+    .option:hover:not(:disabled){border-color:var(--sea);transform:translateX(3px)}
+    .option[aria-pressed="true"]{border-color:#0c7185;background:#e1f9f8}
+    .option:disabled{cursor:default}
+    .option.correct{border-color:#55ad8d;background:#e6f7ee}
+    .option.incorrect{border-color:#db887e;background:#fff0ed}
+    .num{display:grid;place-items:center;flex:none;width:29px;height:29px;background:#e4f2f5;border-radius:8px;font-weight:900;color:var(--sea)}
+    .option[aria-pressed="true"] .num{background:#0b7184;color:white}
+    .option.correct .num{background:var(--good);color:white}
+    .option.incorrect .num{background:var(--bad);color:white}
+    .wording{font-size:clamp(.9rem,1.8vw,1rem);line-height:1.5;overflow-wrap:anywhere}
+    .challenge-bottom{padding:14px 25px 25px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .selection-note{color:var(--muted);font-size:.85rem}
+    .feedback{display:none;margin:0 24px 24px;border-radius:16px;padding:17px 19px;border:1px solid}
+    .feedback.show{display:block}
+    .feedback.good{background:#e5f7ed;border-color:#7ec6a1}
+    .feedback.bad{background:#fff0ed;border-color:#e5a49b}
+    .feedback h3{margin:0 0 6px;font-size:1.12rem}
+    .feedback p{margin:5px 0}
+    .feedback ul{margin:9px 0 0;padding-left:21px}
+    .feedback li{margin:5px 0}
+    .result{display:none;background:#f9fdff;border-radius:25px;padding:clamp(25px,5vw,54px);box-shadow:0 25px 60px #032c4160;text-align:center}
+    .result.active{display:block}
+    .result-icon{font-size:4rem;line-height:1}
+    .result h2{font-size:clamp(2rem,5vw,3rem);margin:13px 0 8px;color:var(--navy)}
+    .score{font-size:clamp(3.5rem,10vw,6rem);line-height:1;font-weight:900;letter-spacing:-.07em;color:var(--sea);margin:16px 0}
+    .result p{color:var(--muted);max-width:520px;margin:0 auto 20px}
+    .result-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+    .footer{color:#d0edf1;font-size:.78rem;margin-top:19px;text-align:center}
+    .damage-status{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .damage-chip{display:inline-flex;align-items:center;border:1px solid #d0f5f5aa;background:#e8fbfb26;color:#fff;border-radius:99px;padding:5px 11px;font-size:.82rem;font-weight:800}
+    .damage-chip.alert{background:#ff887044;border-color:#ffb49e}
+    .patch-overlay[hidden]{display:none}
+    .patch-overlay{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:18px;background:#03202ee0;backdrop-filter:blur(5px)}
+    .patch-dialog{width:min(100%,510px);max-height:min(92vh,760px);overflow:auto;background:#f9fdff;border:3px solid #ffd575;border-radius:25px;padding:clamp(22px,5vw,34px);box-shadow:0 25px 75px #021724aa}
+    .patch-symbol{font-size:2.8rem;line-height:1}
+    .patch-dialog h2{font-size:clamp(1.6rem,4vw,2.2rem);line-height:1.1;color:var(--navy);margin:12px 0}
+    .patch-dialog p{color:var(--muted)}
+    .patch-rule{background:#e7f7f9;border-left:5px solid #0b7184;border-radius:8px;padding:12px 14px;color:var(--ink)!important}
+    .patch-word{font-size:clamp(1.3rem,5.5vw,3rem);overflow-wrap:anywhere;font-weight:900;letter-spacing:.01em;color:var(--navy);text-align:center;margin:18px 0}
+    .patch-choices{display:flex;justify-content:center;gap:12px;margin-bottom:15px}
+    .patch-choice{min-width:68px;min-height:60px;border:2px solid #9ecad2;border-radius:13px;background:#fff;color:var(--navy);font-size:1.65rem;font-weight:900}
+    .patch-choice:hover:not(:disabled){background:#dff7f6;border-color:var(--sea)}
+    .patch-choice:disabled{cursor:default}
+    .patch-choice.is-right{background:#ddf7e8;border-color:var(--good)}
+    .patch-choice.is-wrong{background:#fff0ed;border-color:var(--bad)}
+    .patch-feedback{min-height:1.5em;font-weight:800;color:var(--good)!important;text-align:center}
+    .patch-dialog .cta{display:block;margin:14px auto 0}
+    @media(max-width:760px){.hero-art{width:250px;right:-55px;opacity:.32}.start-grid{grid-template-columns:1fr}.hero-inner{padding:30px 25px}.shell{width:min(100% - 20px,1100px);padding-top:14px}.topbar{margin-bottom:14px}.panel{padding:20px}.game-head{align-items:center}.challenge-top{padding:21px 17px}.options{padding:15px 12px 4px}.challenge-bottom{padding:15px 15px 23px}.feedback{margin:0 12px 16px}.option{padding:10px}.counter{font-size:.83rem}.route{padding:12px 14px}}
+    @media(max-width:430px){.time-pill{font-size:.72rem;padding:6px 9px}.brand{font-size:.73rem}.wording{font-size:.88rem}.option{gap:9px}.num{width:25px;height:25px}.game-head h1{font-size:1.7rem}.counter{padding:7px 10px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar"><div class="brand">❄ Полярная <span>экспедиция</span></div><div class="time-pill">7 заданий · 5–7 минут</div></div>
+    <section id="welcome" class="welcome">
+      <div class="hero">
+        <div class="floes" aria-hidden="true"></div>
+        <div class="hero-inner">
+          <p class="eyebrow">Русский язык · ЕГЭ · задание 10</p>
+          <h1>Код приставки</h1>
+          <p class="lead">Ледокол ждёт команды. Найди верные строки, раскрой код и проведи корабль сквозь льды.</p>
+          <button id="startBtn" class="cta" type="button">Начать рейс →</button>
+        </div>
+        <svg class="hero-art" viewBox="0 0 400 240" role="img" aria-label="Иллюстрация ледокола среди льдин">
+          <path d="M0 205 Q100 178 198 204 T400 200 V240 H0Z" fill="#b9f5f6" opacity=".8"/>
+          <path d="M45 188 L320 188 L282 221 L105 221Z" fill="#163e58"/>
+          <path d="M56 188 L321 188 L302 203 L86 203Z" fill="#ffba71"/>
+          <path d="M134 165 H261 L277 188 H111Z" fill="#f5fbff"/>
+          <path d="M154 133 H240 V165 H154Z" fill="#f5fbff"/>
+          <path d="M176 108 H219 V133 H176Z" fill="#f5fbff"/>
+          <path d="M185 88 H208 V108 H185Z" fill="#ee8b70"/>
+          <path d="M167 140 H179 V151 H167ZM189 140 H201 V151 H189ZM211 140 H223 V151 H211Z" fill="#0b6378"/>
+          <path d="M65 216 L101 207 L124 214 L109 229 H54Z M326 218 L349 207 L380 218 L365 229 H318Z" fill="#f8ffff"/>
+          <path d="M27 235 Q93 224 160 235 T298 235 T400 233" fill="none" stroke="#ffffff" stroke-width="5" opacity=".7"/>
+        </svg>
+      </div>
+      <div class="start-grid">
+        <div class="panel"><h2>Правила рейса</h2><ol class="rules"><li>В каждом задании выбери <strong>все строки</strong>, где во всех словах пропущена одна и та же буква.</li><li>Нажми «Проверить код» и прочитай объяснение.</li><li>Точный ответ — 1 балл. Неполный ответ или лишняя строка — царапина. Если все выбранные строки неверны — пробоина. Пять царапин тоже требуют заплатки.</li></ol></div>
+        <div class="panel"><h2>Перед стартом</h2><p>Можно отмечать несколько строк. После ответа откроются правильные слова и подсказка. При ремонте выбери букву в дополнительном слове: ошибочная заплатка завершит рейс. В конце можно сыграть ещё раз.</p></div>
+      </div>
+      <p class="source">Основа заданий: 01_materials/4b15e4862ef3352ac9ef09ff9f90c71f.pdf. Тема сверена с «Навигатором самостоятельной подготовки к ЕГЭ 2026: Орфография» из 01_materials.</p>
+    </section>
+
+    <section id="game" class="game" aria-label="Игровой раунд">
+      <div class="game-head"><div><p class="eyebrow">Ледовая экспедиция</p><h1>Код приставки</h1><p>Держим курс на чистую воду</p></div><div id="counter" class="counter"></div></div>
+      <div class="route">
+        <div class="route-labels"><span>Порт отправления</span><span>Открытое море</span></div>
+        <div class="track" aria-hidden="true"><div id="trackFill" class="track-fill"></div><div id="shipMarker" class="ship-marker">🚢</div></div>
+        <div id="routeStatus" class="route-status"></div>
+        <div id="damageStatus" class="damage-status" aria-live="polite"></div>
+      </div>
+      <div id="challenge" class="challenge">
+        <div class="challenge-top"><p id="questionKicker" class="question-kicker"></p><h2>В каких строках во всех словах пропущена одна и та же буква?</h2><p class="hint">Отметь все подходящие строки, затем проверь ответ.</p></div>
+        <div id="options" class="options" role="group" aria-label="Строки ответа"></div>
+        <div class="challenge-bottom"><button id="checkBtn" class="cta" type="button">Проверить код</button><button id="nextBtn" class="cta" type="button" hidden>Следующая льдина →</button><span id="selectionNote" class="selection-note">Выбери одну или несколько строк.</span></div>
+        <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+      </div>
+      <div id="result" class="result" aria-live="polite"></div>
+    </section>
+    <div class="footer">Код приставки · тренировка задания 10 ЕГЭ</div>
+    <div id="patchOverlay" class="patch-overlay" hidden>
+      <div class="patch-dialog" role="dialog" aria-modal="true" aria-labelledby="patchTitle" aria-describedby="patchRule">
+        <div class="patch-symbol" aria-hidden="true">🛠️</div>
+        <h2 id="patchTitle"></h2>
+        <p>Выбери букву для одного дополнительного слова и поставь заплатку.</p>
+        <p id="patchRule" class="patch-rule"></p>
+        <div id="patchWord" class="patch-word"></div>
+        <div id="patchChoices" class="patch-choices" role="group" aria-label="Выберите пропущенную букву"></div>
+        <p id="patchFeedback" class="patch-feedback" role="status" aria-live="polite"></p>
+        <button id="patchContinue" class="cta" type="button" hidden>Продолжить рейс →</button>
+      </div>
+    </div>
+  </main>
+  <script>
+    "use strict";
+    const tasks = [
+      {id:"14064",rows:[
+        "пр..образовать, пр..неприятный, пр..следовать",
+        "сверх..естественный, с..ёмка, двух..ярусный",
+        "п..никнуть, пр..дедушка, поз..вчера",
+        "чере..чур, и..синя-чёрный, бе..крайний",
+        "вз..скать, без..нициативный, сверх..зысканный"
+      ],answer:[1,2,4],solved:[
+        "1 — преобразовать, пренеприятный, преследовать: Е.",
+        "2 — сверхъестественный, съёмка, двухъярусный: Ъ.",
+        "4 — чересчур, иссиня-чёрный, бескрайний: С."
+      ],tip:"После приставки на согласную перед Е, Ё, Ю, Я пишется разделительный Ъ; перед глухой согласной в приставках на З/С пишется С."},
+      {id:"16864",rows:[
+        "пр..добрый, гостепр..имный, правопр..емник",
+        "н..дломить, поз..бросил, з..ночевать",
+        "бе..ровный, и..черченный, ра..пущенный",
+        "зав..южило, фамил..ярный, гнездов..е",
+        "вз..скание, без..нтересный, меж..нститутский"
+      ],answer:[2,4],solved:[
+        "2 — надломить, позабросил, заночевать: А.",
+        "4 — завьюжило, фамильярный, гнездовье: Ь."
+      ],tip:"Проверяй каждое слово строки: в варианте 5 после приставок на согласную пишется Ы, но в «межинститутский» сохраняется И."},
+      {id:"17203",rows:[
+        "ра..буженный, бе..граничный, и..вестить",
+        "н..испособнейший, поз..вчера, н..дстройка",
+        "сверх..зысканно, меж..этажный, пред..дущий",
+        "пр..следовать (врага), пр..купить, пр..шить (пуговицу)",
+        "по..черкнуть, на..пись, пре..писание"
+      ],answer:[1,2,5],solved:[
+        "1 — разбуженный, безграничный, известить: З.",
+        "2 — наиспособнейший, позавчера, надстройка: А.",
+        "5 — подчеркнуть, надпись, предписание: Д."
+      ],tip:"В приставках на З/С перед звонкой согласной пишется З. В строке 5 во всех трёх словах нужна Д."},
+      {id:"24303",rows:[
+        "пр..стыдить, непр..ступная (крепость), беспр..мерный",
+        "от..скать, пост..ндустриальный, за..нтересовать",
+        "сни..хождение, и..колесить, ра..ценки",
+        "непре..сказуемый, о..блеск, по..точить",
+        "нера..сказанный, под..спел, н..илучший"
+      ],answer:[1,3],solved:[
+        "1 — пристыдить, неприступная, беспримерный: И.",
+        "3 — снисхождение, исколесить, расценки: С."
+      ],tip:"В строке 3 перед глухими согласными в приставках на З/С пишется С; в строке 1 во всех словах нужна И."},
+      {id:"24492",rows:[
+        "пр..землиться, пр..обретение, пр..открывшийся",
+        "р..зобщённо, п..переменно, пр..верка",
+        "с..митировать, без..сходный, под..грать",
+        "ра..мешать, бе..граничный, бе..численный",
+        "роз..грыш, без..скусный, за..граться"
+      ],answer:[1,3],solved:[
+        "1 — приземлиться, приобретение, приоткрывшийся: И.",
+        "3 — сымитировать, безысходный, подыграть: Ы."
+      ],tip:"После русской приставки на согласную начальная И корня обычно меняется на Ы: сымитировать, подыграть."},
+      {id:"30012",rows:[
+        "пр..бинтовать, пр..морский, пр..бывать (на станцию)",
+        "по..цепленный (вагон), о..гадать, на..кусить",
+        "ра..сеять, в..балтывать, бе..голосый",
+        "без..ндукционный, меж..гровой, с..мпровизировать",
+        "непр..будный, нед..варить, п..завчера"
+      ],answer:[1,5],solved:[
+        "1 — прибинтовать, приморский, прибывать: И.",
+        "5 — непробудный, недоварить, позавчера: О."
+      ],tip:"В строке 1 приставка ПРИ- обозначает присоединение, близость или прибытие. В строке 5 во всех словах пишется О."},
+      {id:"37262",rows:[
+        "в..скликнул, п..дножие (горы), об..льстить",
+        "из..скать, пред..стория, сверх..скусный",
+        "пр..стройка, непр..рывный, пр..станище",
+        "не..добровать, ра..колоть, бе..принципный",
+        "с..ёжился, в..едливый, б..ющийся"
+      ],answer:[1,4],solved:[
+        "1 — воскликнул, подножие, обольстить: О.",
+        "4 — несдобровать, расколоть, беспринципный: С."
+      ],tip:"«Несдобровать» — особое написание с С; в «расколоть» и «беспринципный» С стоит перед глухой согласной."}
+    ];
+    const patchCards = [
+      {word:"пред..юбилейный",full:"предъюбилейный",correct:"Ъ",choices:["Ъ","Ь"],rule:"После приставки на согласную перед Ю пишется разделительный Ъ."},
+      {word:"бе..характерный",full:"бесхарактерный",correct:"С",choices:["З","С"],rule:"Перед глухим Х в приставке БЕС- пишется С."},
+      {word:"пр..озёрный",full:"приозёрный",correct:"И",choices:["Е","И"],rule:"ПРИ- обозначает близость: расположенный у озера."},
+      {word:"раз..ярённый",full:"разъярённый",correct:"Ъ",choices:["Ъ","Ь"],rule:"После приставки на согласную перед Я пишется разделительный Ъ."},
+      {word:"д..гнать",full:"догнать",correct:"О",choices:["А","О"],rule:"Неизменяемая приставка ДО- сохраняет букву О."},
+      {word:"и..пытывать",full:"испытывать",correct:"С",choices:["З","С"],rule:"Перед глухим П в приставке ИС- пишется С."},
+      {word:"кур..ёз",full:"курьёз",correct:"Ь",choices:["Ъ","Ь"],rule:"Внутри слова перед Ё пишется разделительный Ь."}
+    ];
+    const byId = id => document.getElementById(id);
+    let round=0, score=0, checked=false, selected=new Set();
+    let scratches=0, patches=0, holes=0, openHole=false, pendingPatch=null, gameOver=false;
+    function setVisible(el,show){el.hidden=!show}
+    function updateDamage(){
+      const status=byId("damageStatus");
+      status.replaceChildren();
+      const scratch=document.createElement("span");scratch.className="damage-chip"+(scratches>=4?" alert":"");scratch.textContent="✧ Царапины: "+scratches+" / 5";
+      const repaired=document.createElement("span");repaired.className="damage-chip";repaired.textContent="▣ Заплатки: "+patches;
+      status.append(scratch,repaired);
+      if(openHole){const hole=document.createElement("span");hole.className="damage-chip alert";hole.textContent="⚠ Пробоина!";status.append(hole)}
+      byId("shipMarker").textContent=openHole?"🚢💥":scratches?"🚢✧":"🚢";
+    }
+    function updateProgress(){
+      const pct=Math.round(round/tasks.length*100);
+      byId("trackFill").style.width=pct+"%";
+      byId("shipMarker").style.left=pct+"%";
+      byId("routeStatus").textContent="Пройдено "+round+" из "+tasks.length+" ледовых участков";
+      updateDamage();
+    }
+    function renderRound(){
+      checked=false;selected=new Set();
+      const task=tasks[round];
+      byId("counter").textContent="Льдина "+(round+1)+" / "+tasks.length;
+      byId("questionKicker").textContent="Задание 10 · № "+task.id;
+      byId("options").replaceChildren();
+      task.rows.forEach((row,index)=>{
+        const number=index+1,btn=document.createElement("button");
+        btn.type="button";btn.className="option";btn.setAttribute("aria-pressed","false");
+        const n=document.createElement("span");n.className="num";n.textContent=number;
+        const words=document.createElement("span");words.className="wording";words.textContent=row;
+        btn.append(n,words);
+        btn.addEventListener("click",()=>{
+          if(checked)return;
+          if(selected.has(number))selected.delete(number);else selected.add(number);
+          btn.setAttribute("aria-pressed",String(selected.has(number)));
+          byId("selectionNote").textContent=selected.size ? "Выбрано строк: "+selected.size : "Выбери одну или несколько строк.";
+        });
+        byId("options").append(btn);
+      });
+      byId("feedback").className="feedback";byId("feedback").replaceChildren();
+      byId("selectionNote").textContent="Выбери одну или несколько строк.";
+      setVisible(byId("checkBtn"),true);setVisible(byId("nextBtn"),false);
+      byId("challenge").style.display="block";
+      byId("result").classList.remove("active");
+      updateProgress();
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+    function openPatch(reason){
+      pendingPatch={reason,card:patchCards[round]};
+      const card=pendingPatch.card;
+      byId("patchTitle").textContent=reason==="scratches"?"Пятая царапина! Нужна заплатка.":"Пробоина! Срочно ставим заплатку.";
+      byId("patchRule").textContent=card.rule;
+      byId("patchWord").textContent=card.word;
+      byId("patchFeedback").textContent="";
+      byId("patchChoices").replaceChildren();
+      setVisible(byId("patchContinue"),false);
+      card.choices.forEach(letter=>{
+        const btn=document.createElement("button");
+        btn.type="button";btn.className="patch-choice";btn.textContent=letter;
+        btn.setAttribute("aria-label","Вписать "+letter);
+        btn.addEventListener("click",()=>choosePatch(letter,btn));
+        byId("patchChoices").append(btn);
+      });
+      byId("patchOverlay").hidden=false;
+      byId("patchChoices").querySelector("button").focus();
+    }
+    function choosePatch(letter,button){
+      if(!pendingPatch)return;
+      const card=pendingPatch.card;
+      [...byId("patchChoices").children].forEach(btn=>{
+        btn.disabled=true;
+        if(btn.textContent===card.correct)btn.classList.add("is-right");
+      });
+      if(letter===card.correct){
+        patches++;
+        openHole=false;
+        if(pendingPatch.reason==="scratches")scratches=0;
+        pendingPatch=null;
+        byId("patchFeedback").textContent="Заплатка подошла! "+card.full+".";
+        setVisible(byId("patchContinue"),true);
+        byId("patchContinue").focus();
+        updateDamage();
+      }else{
+        button.classList.add("is-wrong");
+        pendingPatch=null;
+        byId("patchOverlay").hidden=true;
+        gameOver=true;
+        showResult();
+      }
+    }
+    function checkAnswer(){
+      if(checked)return;
+      if(!selected.size){byId("selectionNote").textContent="Сначала отметь хотя бы одну строку.";return}
+      checked=true;
+      const task=tasks[round];
+      const correctChosen=task.answer.filter(n=>selected.has(n)).length;
+      const exact=selected.size===task.answer.length && correctChosen===task.answer.length;
+      let damage="",patchReason=null;
+      if(exact){score++;damage="Код верный — без повреждений."}
+      else if(correctChosen===0){holes++;openHole=true;patchReason="hole";damage="Все выбранные строки неверны: пробоина. Нужна заплатка."}
+      else{scratches++;damage="Неполный ответ или лишняя строка: одна царапина.";if(scratches===5){holes++;openHole=true;patchReason="scratches";damage="Пять царапин: нужна заплатка."}}
+      [...byId("options").children].forEach((btn,index)=>{
+        const n=index+1;
+        btn.disabled=true;
+        if(task.answer.includes(n))btn.classList.add("correct");
+        else if(selected.has(n))btn.classList.add("incorrect");
+      });
+      const box=byId("feedback");box.replaceChildren();
+      box.className="feedback show "+(exact?"good":"bad");
+      const title=document.createElement("h3");
+      title.textContent=exact?"Код верный! Ледокол идёт дальше.":patchReason?"Ледокол повреждён — срочный ремонт.":"Ледокол получил царапину.";
+      const impact=document.createElement("p");impact.textContent=damage;
+      const answer=document.createElement("p");answer.textContent="Верные строки: "+task.answer.join(", ")+".";
+      const list=document.createElement("ul");
+      task.solved.forEach(line=>{const li=document.createElement("li");li.textContent=line;list.append(li)});
+      const tip=document.createElement("p");tip.textContent=task.tip;
+      box.append(title,impact,answer,list,tip);
+      setVisible(byId("checkBtn"),false);setVisible(byId("nextBtn"),!patchReason);
+      byId("nextBtn").textContent=round===tasks.length-1?"Узнать результат →":"Следующая льдина →";
+      byId("selectionNote").textContent=exact?"+1 балл":damage;
+      updateDamage();
+      if(patchReason)openPatch(patchReason);
+      else box.scrollIntoView({behavior:"smooth",block:"nearest"});
+    }
+    function showResult(){
+      byId("patchOverlay").hidden=true;
+      byId("challenge").style.display="none";
+      byId("counter").textContent=gameOver?"Рейс прерван":"Рейс завершён";
+      byId("result").classList.add("active");
+      updateProgress();
+      if(gameOver)byId("routeStatus").textContent="Рейс остановился на льдине "+(round+1)+" из "+tasks.length;
+      const box=byId("result");box.replaceChildren();
+      const icon=document.createElement("div");icon.className="result-icon";icon.setAttribute("aria-hidden","true");icon.textContent=gameOver?"🧊":score===tasks.length?"🏆":"🚢";
+      const title=document.createElement("h2");title.textContent=gameOver?"Рейс окончен":score===tasks.length?"Чистая вода!":"Ледокол вышел в море";
+      const tally=document.createElement("div");tally.className="score";tally.textContent=score+" / "+tasks.length;
+      const msg=document.createElement("p");
+      msg.textContent=gameOver?"Заплатка не подошла. Правильно: "+patchCards[round].full+". Попробуй новый рейс.":score>=6?"Отлично: почти все коды раскрыты.":score>=3?"Хороший рейс! Повтори задания, где буквы в строке различались.":"Маршрут пройден. Попробуй ещё раз и внимательно сравнивай все три слова в каждой строке.";
+      const stats=document.createElement("p");stats.textContent="Царапины: "+scratches+" · Пробоины: "+holes+" · Удачные заплатки: "+patches;
+      const actions=document.createElement("div");actions.className="result-actions";
+      const again=document.createElement("button");again.className="cta";again.type="button";again.textContent="Сыграть ещё раз ↻";again.addEventListener("click",start);
+      actions.append(again);box.append(icon,title,tally,msg,stats,actions);
+      box.scrollIntoView({behavior:"smooth",block:"start"});
+    }
+    function start(){
+      round=0;score=0;scratches=0;patches=0;holes=0;openHole=false;pendingPatch=null;gameOver=false;
+      byId("patchOverlay").hidden=true;
+      byId("welcome").classList.add("hidden");byId("game").classList.add("active");renderRound();
+    }
+    byId("startBtn").addEventListener("click",start);
+    byId("checkBtn").addEventListener("click",checkAnswer);
+    byId("nextBtn").addEventListener("click",()=>{round++;if(round<tasks.length)renderRound();else showResult()});
+    byId("patchContinue").addEventListener("click",()=>{byId("patchOverlay").hidden=true;setVisible(byId("nextBtn"),true);byId("nextBtn").focus()});
+  </script>
+</body>
+</html>
